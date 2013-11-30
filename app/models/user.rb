@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+  # Kdyz smazeme uzivatele, odstrani se i jeho microposty
+  has_many :microposts, dependent: :destroy
 	# Nektere DB adaptery maji indexy case insensitive, coz by vadilo pri validoani unikatnosti
 	before_save { email.downcase! }
   before_create :create_remember_token
@@ -20,6 +22,12 @@ class User < ActiveRecord::Base
 
   def User.encrypt(token)
     Digest::SHA1.hexdigest(token.to_s)
+  end
+
+  def feed
+    # Vzdy je nutne vyuzit tento zapis pro zdani parametru, hodnota je totiz pak escapovana
+    # aby nemohlo dojit k SQL injection
+    Micropost.where("user_id = ?", id)
   end
 
   private
