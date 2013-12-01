@@ -1,7 +1,14 @@
 LearnRails::Application.routes.draw do
-  resources :users
+  resources :users do
+    # member dela to, ze navazuje na url users/1/following a users/1/followers
+    # dalsi moznost je collection, to by nepotrebovalo id
+    member do
+      get :following, :followers
+    end
+  end
   resources :sessions, only: [:new, :create, :destroy]
   resources :microposts, only: [:create, :destroy]
+  resources :relationships, only: [:create, :destroy]
 
   root  'static_pages#home'
 
